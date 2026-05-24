@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning Latent Protein Languages for Autoregressive Generation</title>
+    <meta
+      name="description"
+      content="Project page for Learning Latent Protein Languages for Autoregressive Generation."
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="blue-theme.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top">Latent Protein Languages</a>
+      <nav aria-label="Page sections">
+        <a href="#abstract">Abstract</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero section">
+        <div class="hero-copy">
+          <h1>Learning Latent Protein Languages for Autoregressive Generation</h1>
+          <p class="authors">
+            Mahdi Pourmirzaei, Farzaneh Esmaili,<br />
+            Amir Ziashahabi, Mohammadreza Pourmirzaei,<br />
+            Dong Xu
+          </p>
+          <p class="affiliations">
+            University of Missouri<br />
+            University of Southern California
+          </p>
+          <div class="actions" aria-label="Paper links">
+            <a class="button primary" href="https://arxiv.org/abs/PLACEHOLDER">arXiv version</a>
+            <a class="button" href="https://github.com/mahdip72/latent_protein_languages">
+              GitHub repository
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section id="abstract" class="section text-section">
+        <h2>Abstract</h2>
+        <p>
+          Autoregressive transformers are the dominant generative recipe across most tokenized
+          modalities, yet they remain comparatively weak for protein sequence and structure
+          generation. We argue that this gap is, in large part, a tokenization problem: raw amino
+          acid tokens have low semantic density and tend to drift into repetitive, low-complexity
+          regimes, while three-dimensional backbone coordinates do not form a natural discrete
+          language at all.
+        </p>
+        <p>
+          We introduce two learned latent protein languages. <strong>Protein Latent Language</strong>
+          (PLL) is a sequence-side vocabulary built on top of a frozen ESM-2 encoder and decodable
+          back to amino acids. <strong>Structure Latent Language</strong> (SLL) is a structure-side
+          vocabulary built on a modified version of the GCP-VQVAE tokenizer and decodable back to
+          backbone coordinates. Under a single decoder-only recipe, PLLM and SLLM show steeper
+          compute scaling than raw amino acid modeling, and SLLM enables fast sequence-to-structure
+          candidate sampling with confidence-based selection.
+        </p>
+        <p>
+          Empirically, PLLM and SLLM improve the loss-versus-compute trends over raw amino acid modeling, with fitted
+          scaling exponents of 0.038 for PLLM and 0.049 for SLLM compared with 0.020 for the amino acid baseline. On
+          protein generation benchmarks, the latent languages provide a compact autoregressive interface for quality,
+          diversity, and novelty comparisons. For sequence-to-structure generation, sampling more SLL trajectories
+          improves oracle quality on CASP and CAMEO targets, while the confidence-based selector recovers part of this
+          gain before coordinate decoding. These results suggest that learned protein tokenization can make
+          decoder-only generation more effective for both sequence and structure.
+        </p>
+      </section>
+
+      <section id="method" class="section text-section">
+        <h2>Method</h2>
+        <p>
+          For protein sequences, we use a VQ-RAE approach to build the PLL tokenizer. The tokenizer
+          learns discrete sequence-side codes from ESM-2 representations, while keeping the code
+          stream decodable back to amino acid identities.
+        </p>
+        <p>
+          For protein backbones, we consider upgrading the GCP-VQVAE-style tokenizer so its latent
+          codes carry more semantic information. The resulting SLL codes remain decodable to
+          backbone coordinates, but are also trained to retain sequence, confidence, and
+          representation signals. We then apply the same next-token recipe to amino acid, PLL, and
+          SLL streams, with an SLLM sequence-to-structure variant that samples structure tokens and
+          selects candidates using internal token confidence.
+        </p>
+        <div class="method-figures" aria-label="Method overview figures">
+          <figure class="method-figure">
+            <img src="assets/pll-tokenizer.png" alt="Protein latent language tokenizer overview" />
+            <figcaption>
+              <strong>Protein latent language tokenizer.</strong>
+              PLL is learned with a VQ-RAE recipe over frozen ESM-2 representations, producing discrete sequence-side
+              tokens that can be decoded back to amino acid identities.
+            </figcaption>
+          </figure>
+          <figure class="method-figure">
+            <img src="assets/sll-tokenizer.png" alt="Structure latent language tokenizer overview" />
+            <figcaption>
+              <strong>Structure latent language tokenizer.</strong>
+              SLL upgrades a GCP-VQVAE-style backbone tokenizer so its codes remain coordinate-decodable while carrying
+              richer sequence, confidence, and representation information.
+            </figcaption>
+          </figure>
+          <figure class="method-figure">
+            <img src="assets/s2s-overview.png" alt="Sequence-to-structure generation overview" />
+            <figcaption>
+              <strong>Sequence-to-structure generation.</strong>
+              The decoder-only model samples SLL trajectories from the sequence context, then uses token confidence to
+              select higher-quality candidates before coordinate decoding.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="results" class="section">
+        <div class="section-heading">
+          <h2>Results</h2>
+          <p>
+            This page highlights the three core result groups: scaling laws, ProteinBench, and
+            sequence-to-structure inference-time scaling.
+          </p>
+        </div>
+
+        <section class="result-block" aria-labelledby="scaling-title">
+          <div class="result-heading">
+            <h3 id="scaling-title">Scaling Laws</h3>
+            <p>
+              PLLM and SLLM have steeper loss-versus-compute trends than the raw amino acid model
+              under the same decoder-only recipe. The fitted exponents are 0.020 for the amino acid
+              model, 0.038 for PLLM, and 0.049 for SLLM.
+            </p>
+          </div>
+
+          <div class="figure-grid three-up">
+            <figure>
+              <img src="assets/scaling-aa.png" alt="Amino acid validation loss versus compute." />
+              <figcaption>Amino acid model.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/scaling-pll.png" alt="PLL validation loss versus compute." />
+              <figcaption>Protein latent language model.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/scaling-sll.png" alt="SLL validation loss versus compute." />
+              <figcaption>Structure latent language model.</figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section class="result-block" aria-labelledby="protein-generation-title">
+          <div class="result-heading">
+            <h3 id="protein-generation-title">Protein Generation</h3>
+            <p>
+              We evaluate protein generation using the ProteinBench approach, which separates
+              quality, diversity, and novelty. The sequence table compares length-conditioned
+              sequence generation; the structure table compares decoded backbone generation.
+            </p>
+          </div>
+
+          <div class="table-grid proteinbench-tables">
+            <div class="table-block">
+              <h4>Length-Conditioned Sequence ProteinBench</h4>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>pLDDT ↑</th>
+                    <th>Pair TM ↓</th>
+                    <th>Clust. ↑</th>
+                    <th>Max TM ↓</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>ProGen2</td>
+                    <td>65.26</td>
+                    <td>0.3900</td>
+                    <td>0.9325</td>
+                    <td>0.6675</td>
+                  </tr>
+                  <tr>
+                    <td>DPLM</td>
+                    <td>89.93</td>
+                    <td>0.5100</td>
+                    <td>0.7450</td>
+                    <td>0.8525</td>
+                  </tr>
+                  <tr>
+                    <td>ESM3</td>
+                    <td>53.24</td>
+                    <td>0.3550</td>
+                    <td>0.9750</td>
+                    <td>0.6925</td>
+                  </tr>
+                  <tr class="emphasis-row">
+                    <td>PLLM</td>
+                    <td>59.86</td>
+                    <td>0.2567</td>
+                    <td>0.9700</td>
+                    <td>0.6368</td>
+                  </tr>
+                  <tr>
+                    <td>PLM</td>
+                    <td>65.26</td>
+                    <td>0.2413</td>
+                    <td>0.9250</td>
+                    <td>0.5859</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="table-note">Averaged over lengths 100, 200, 300, and 500 at T = 0.5.</p>
+            </div>
+
+            <div class="table-block">
+              <h4>Structure-Design ProteinBench</h4>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>scTM ↑</th>
+                    <th>scRMSD ↓</th>
+                    <th>Pair TM ↓</th>
+                    <th>Clust. ↑</th>
+                    <th>Max TM ↓</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Protpardelle</td>
+                    <td>0.9289</td>
+                    <td>1.5502</td>
+                    <td>0.7477</td>
+                    <td>0.2175</td>
+                    <td>0.7966</td>
+                  </tr>
+                  <tr>
+                    <td>ProteinGenerator</td>
+                    <td>0.7524</td>
+                    <td>2.5888</td>
+                    <td>0.6554</td>
+                    <td>0.4175</td>
+                    <td>0.5806</td>
+                  </tr>
+                  <tr>
+                    <td>La-Proteina</td>
+                    <td>0.9677</td>
+                    <td>0.7871</td>
+                    <td>0.6231</td>
+                    <td>0.6550</td>
+                    <td>0.7369</td>
+                  </tr>
+                  <tr>
+                    <td>RFdiffusion</td>
+                    <td>0.9200</td>
+                    <td>1.8900</td>
+                    <td>0.4200</td>
+                    <td>0.6325</td>
+                    <td>0.6675</td>
+                  </tr>
+                  <tr class="emphasis-row">
+                    <td>SLLM</td>
+                    <td>0.5390</td>
+                    <td>3.3974</td>
+                    <td>0.4558</td>
+                    <td>0.9175</td>
+                    <td>0.5536</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="table-note">Averaged over lengths 50, 100, 300, and 500.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="result-block" aria-labelledby="inference-title">
+          <div class="result-heading">
+            <h3 id="inference-title">Inference-Time Scaling</h3>
+            <p>
+              We adapt the pretrained SLLM for sequence-to-structure prediction by encoding the
+              input amino acid sequence with an E1 protein encoder and then autoregressively
+              sampling SLL structure-token trajectories. Each sampled token stream can be decoded
+              into backbone coordinates by the fixed SLL decoder. To test whether extra sampling is
+              useful, we evaluate oracle best@k after coordinate decoding and compare it with a
+              DeepConf-style selector that uses only internal SLL-token confidence and token-space
+              consensus before decoding. We report the full CASP14/15/16 combined tuning-set curves
+              and the held-out CAMEO-2024 curves.
+            </p>
+          </div>
+
+          <h4>CASP14/15/16 Combined</h4>
+          <div class="figure-grid">
+            <figure>
+              <img src="assets/casp-tm.png" alt="CASP combined TM-score versus number of sampled SLL trajectories." />
+              <figcaption>TM-score versus sampled candidates.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/casp-lddt.png" alt="CASP combined lDDT-CA versus number of sampled SLL trajectories." />
+              <figcaption>lDDT-CA versus sampled candidates.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/casp-rmsd.png" alt="CASP combined RMSD versus number of sampled SLL trajectories." />
+              <figcaption>RMSD versus sampled candidates.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/casp-gdtts.png" alt="CASP combined GDT-TS versus number of sampled SLL trajectories." />
+              <figcaption>GDT-TS versus sampled candidates.</figcaption>
+            </figure>
+          </div>
+
+          <h4 class="subsection-title">CAMEO-2024</h4>
+          <div class="figure-grid">
+            <figure>
+              <img src="assets/cameo-tm.png" alt="CAMEO TM-score versus number of sampled SLL trajectories." />
+              <figcaption>TM-score versus sampled candidates.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/cameo-lddt.png" alt="CAMEO lDDT-CA versus number of sampled SLL trajectories." />
+              <figcaption>lDDT-CA versus sampled candidates.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/cameo-rmsd.png" alt="CAMEO RMSD versus number of sampled SLL trajectories." />
+              <figcaption>RMSD versus sampled candidates.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/cameo-gdtts.png" alt="CAMEO GDT-TS versus number of sampled SLL trajectories." />
+              <figcaption>GDT-TS versus sampled candidates.</figcaption>
+            </figure>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Project page for <em>Learning Latent Protein Languages for Autoregressive Generation</em>.
+      </p>
+    </footer>
+    <script>
+      document.querySelector("#abstract").innerHTML = `
+        <h2>Abstract</h2>
+        <p>
+          Autoregressive transformers are the dominant generative recipe across most tokenized modalities, yet they
+          remain comparatively weak for protein sequence and structure generation. We argue that this gap is, in large
+          part, a tokenization problem: raw amino acid tokens have low semantic density and tend to drift into
+          repetitive, low-complexity regimes, while three-dimensional backbone coordinates do not form a natural
+          discrete language at all.
+        </p>
+        <p>
+          We introduce two learned latent protein languages. <em>Protein Latent Language</em> (PLL) is a sequence-side
+          vocabulary built on top of a frozen ESM-2 encoder and decodable back to amino acids. <em>Structure Latent
+          Language</em> (SLL) is a structure-side vocabulary built on a modified version of the GCP-VQVAE tokenizer and
+          decodable back to backbone coordinates. Under a single decoder-only recipe, the resulting PLL and SLL
+          transformer models (PLLM, SLLM) exhibit compute-scaling exponents roughly 1.9x and 2.45x steeper than raw
+          amino acid modeling, and produce samples whose entropy, length, and structural statistics track natural
+          distributions much more closely than residue-level generation does. In particular, PLLM eliminates the
+          low-complexity drift that post-filtered sequence benchmarks routinely hide, and SLL improves supervised
+          structure-tokenizer performance over its baseline while reducing sequence-to-structure validation perplexity
+          via next token prediction objective by 34%. We further use SLLM for sequence-to-structure prediction, where
+          latent-token sampling runs roughly three orders of magnitude faster than current specialized MSA-based
+          structure predictors, and we observe early signs that using the model's own internal token confidence for
+          inference-time scaling can lift prediction quality beyond a single decoded sample.
+        </p>
+        <p>
+          Together, these results position learned latent protein languages as a promising direction for language
+          modeling to explore, offering a practical substrate for bringing autoregressive transformer scaling and
+          inference-time sampling to protein generation.
+        </p>
+      `;
+    </script>
+  </body>
+</html>

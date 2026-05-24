@@ -1,0 +1,231 @@
+:root {
+  --background: #f7faff;
+  --surface: #ffffff;
+  --surface-soft: #eef5ff;
+  --ink: #142033;
+  --muted: #58677d;
+  --border: #d7e3f4;
+  --accent: #2563eb;
+  --accent-dark: #1d4ed8;
+  --accent-soft: #dbeafe;
+  --shadow: 0 18px 45px rgba(30, 64, 175, 0.1);
+}
+
+body {
+  background:
+    linear-gradient(180deg, rgba(219, 234, 254, 0.65), rgba(247, 250, 255, 0) 520px),
+    var(--background);
+}
+
+.site-header {
+  background: rgba(247, 250, 255, 0.92);
+}
+
+.site-header .brand {
+  display: none;
+}
+
+.site-header {
+  justify-content: center;
+}
+
+.site-header nav {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.authors {
+  color: #1b2a44;
+}
+
+.link-button.primary {
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
+}
+
+.table-block strong,
+tbody tr.emphasis td {
+  color: var(--accent-dark);
+}
+
+.method-figures {
+  display: grid;
+  gap: 24px;
+  margin-top: 34px;
+}
+
+.method-figure {
+  margin: 0;
+  padding: 18px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.method-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.method-figure figcaption {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.method-figure figcaption strong {
+  color: var(--ink);
+}
+
+#abstract > h2,
+#method > h2,
+#results > h2 {
+  font-size: clamp(34px, 3.4vw, 48px);
+  text-align: center;
+}
+
+#results .section-heading > h2,
+.result-heading,
+.result-heading h3,
+.result-block > h3,
+.table-block h3 {
+  text-align: center;
+}
+
+#results .section-heading > h2 {
+  font-size: clamp(34px, 3.4vw, 48px);
+}
+
+#results > .section-heading,
+#results .result-heading {
+  width: 100%;
+  max-width: none;
+  margin-right: auto;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+#results > .section-heading > h2,
+#results .result-heading > h3,
+#results .result-block > h3 {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
+}
+
+#results > .section-heading > p {
+  display: none;
+}
+
+#results {
+  width: min(1120px, calc(100vw - 48px));
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#method {
+  width: min(1120px, calc(100vw - 48px));
+  max-width: min(1120px, calc(100vw - 48px));
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#method > p {
+  max-width: 820px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#method .method-figures {
+  width: 100%;
+  max-width: 1120px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#results .result-block {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#results .result-block > p,
+#results .result-heading > p {
+  max-width: 820px;
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
+}
+
+#results .figure-grid,
+#results .table-grid,
+#results .chart-grid {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  justify-content: center;
+}
+
+#results .table-block,
+#results .figure-card,
+#results figure {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#results .proteinbench-tables,
+#results .inference-grid,
+#results .inference-charts,
+#results .charts-grid {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  justify-content: center;
+}
+
+.hero-copy {
+  width: 100%;
+  max-width: min(1240px, calc(100vw - 48px));
+  margin-right: auto;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-copy h1 {
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1120px;
+  font-size: clamp(30px, 3vw, 54px);
+  text-align: center;
+  white-space: normal;
+  text-wrap: balance;
+}
+
+.hero-copy .authors,
+.hero-copy .affiliations {
+  max-width: 760px;
+  text-align: center;
+}
+
+.hero-copy .links,
+.hero-copy .actions,
+.hero-copy .paper-links,
+.hero-copy .hero-actions,
+.hero-copy .button-row,
+.hero-copy div:has(.link-button) {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
