@@ -62,5 +62,3 @@ html{scroll-behavior:auto}
 .abstract-copy{max-width:820px;margin:0 auto;padding:0;color:var(--muted);font-size:15px;line-height:1.85}
 .abstract-copy p{margin-bottom:20px}
 @media(max-width:540px){.abstract-copy{font-size:14px}}
-.paper-placeholder:disabled{opacity:.6;cursor:default}
-.paper-placeholder:disabled:hover{background:var(--teal)}
